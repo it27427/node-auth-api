@@ -127,4 +127,11 @@ const signIn = async (req, res) => {
   }
 };
 
-module.exports = { signUp, signIn };
+const signOut = (req, res) => {
+  res.clearCookie("Authorization").status(200).json({
+    success: true,
+    message: "Logged out successfully!",
+  });
+};
+
+module.exports = { signUp, signIn, signOut };
