@@ -17,4 +17,18 @@ const signUpSchema = Joi.object({
   confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
 });
 
-module.exports = { signUpSchema };
+const signInSchema = Joi.object({
+  email: Joi.string()
+    .min(6)
+    .max(50)
+    .email({ tlds: { allow: ["com", "net"] } })
+    .required()
+    .trim()
+    .lowercase(),
+  password: Joi.string()
+    .min(6)
+    .required()
+    .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{6,}$")),
+});
+
+module.exports = { signUpSchema, signInSchema };

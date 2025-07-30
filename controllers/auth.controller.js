@@ -1,13 +1,14 @@
-const { signUpSchema } = require("../middlewares/validator");
+const { signUpSchema, signInSchema } = require("../middlewares/validator");
 const User = require("../models/user.model");
-const { doHash } = require("../utils/hashing");
+const { doHash, doCompare } = require("../utils/hashing");
+const jwt = require("jsonwebtoken");
 
 const signUp = async (req, res) => {
   const { username, email, phoneNumber, password, confirmPassword } = req.body;
 
   try {
     // Joi Validation must receive an object
-    const { error } = signUpSchema.validate({
+    const { error, value } = signUpSchema.validate({
       username,
       email,
       phoneNumber,
@@ -48,7 +49,7 @@ const signUp = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "User signed up successfully",
+      message: "User registered successfully!",
       result,
     });
   } catch (error) {
@@ -60,6 +61,67 @@ const signUp = async (req, res) => {
   }
 };
 
-const signIn = async (req, res) => {};
+const signIn = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const { error, value } = signInSchema.validate({
+      email,
+      password,
+    });
+
+    if (error) {
+      return res.status(401).json({
+        success: false,
+        error: error.details[0].message,
+      });
+    }
+
+    const existingUser = await User.findOne({ email }).select("+password");
+
+    if (!existingUser) {
+      return res.status(401).json({
+        success: false,
+        message: "User doesn't exists!",
+      });
+    }
+
+    const isPasswordValid = await doCompare(password, existingUser.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials!",
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        userId: existingUser._id,
+        email: existingUser.email,
+      },
+      process.env.JWT_SECRET
+    );
+
+    res
+      .cookie("Authorization", "Bearer", token, {
+        expires: Date.now() + 8 * 3600000,
+        httpOnly: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production",
+      })
+      .json({
+        success: true,
+        token,
+        message: "Logged in successfully!",
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
+  }
+};
 
 module.exports = { signUp, signIn };
