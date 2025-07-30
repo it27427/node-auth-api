@@ -101,7 +101,10 @@ const signIn = async (req, res) => {
         userId: existingUser._id,
         email: existingUser.email,
       },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || "8h",
+      }
     );
 
     res
