@@ -4,22 +4,19 @@ const app = express();
 // Load environment variables from .env file
 require("dotenv").config();
 
-// Middleware to handle CORS
+// Middlewares Import
+const morgan = require("morgan");
 const cors = require("cors");
-app.use(cors());
-
-// Middleware to handle URL-encoded bodies
-app.use(express.urlencoded({ extended: true }));
-
-// Middleware to handle static files
-app.use(express.static("public"));
-
-// Middleware to handle cookie parsing
+const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
-app.use(cookieParser());
 
-// Middleware to parse JSON bodies
+app.use(cors());
+app.use(helmet());
+app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
+app.use(express.static("public"));
 
 // Sample route
 app.get("/", (req, res) => {
