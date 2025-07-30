@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+const mongoose = require("mongoose");
+
 // Load environment variables from .env file
 require("dotenv").config();
 
@@ -15,8 +17,15 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(morgan("dev"));
 app.use(express.static("public"));
+
+// MongoDB connection
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Sample route
 app.get("/", (req, res) => {
