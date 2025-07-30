@@ -1,13 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const authController = require("../controllers/auth.controller");
 
-router.post("/signup", async (req, res) => {
-  try {
-    // Handle user signup logic here
-    res.status(201).json({ message: "User signed up successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+router.post("/signup", authController.signUp);
 
 module.exports = router;
