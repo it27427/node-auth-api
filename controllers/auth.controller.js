@@ -60,4 +60,6 @@ const signUp = async (req, res) => {
   }
 };
 
-module.exports = { signUp };
+const signIn = async (req, res) => {};
+
+module.exports = { signUp, signIn };
