@@ -142,4 +142,4 @@ const forgotPassword = async (req, res) => {
   });
 };
 
-module.exports = { signUp, signIn, signOut };
+module.exports = { signUp, signIn, signOut, forgotPassword };
