@@ -134,4 +134,12 @@ const signOut = (req, res) => {
   });
 };
 
+const forgotPassword = async (req, res) => {
+  // This function is not implemented yet
+  res.status(501).json({
+    success: false,
+    message: "Forgot password functionality is not implemented yet.",
+  });
+};
+
 module.exports = { signUp, signIn, signOut };
